@@ -11,7 +11,7 @@ def get_db_credentials():
     secret_name = os.environ.get("DB_SECRET_ARN") # Get ARN from env var set in Task Definition
     region_name = os.environ.get("AWS_REGION", "ap-south-1") # Get region from env var
 
-    print(f"Attempting to fetch secret ARN: {secret_name} in region: {region_name}") # Added print
+    print(f"Attempting to fetch secret ARN: {secret_name} in region: {region_name}") 
 
     if not secret_name:
         raise ValueError("DB_SECRET_ARN environment variable not set.")
