@@ -35,15 +35,23 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2 # Use latest version
 
-    - name: Build, tag, and push image to Amazon ECR
+    - name: Debug Variables
+      run: |
+        echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}"
+        echo "ECR_REPOSITORY=${{ env.ECR_REPOSITORY }}"
+        echo "IMAGE_TAG=${{ github.sha }}"
+        echo "--- Listing files ---"
+        ls -la # Verify Dockerfile is in the current directory
+
+    - name: Build and push image to Amazon ECR using buildx
       id: build-image
       env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        IMAGE_TAG: ${{ github.sha }} # Use the commit SHA as the unique image tag
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }} # Use the commit SHA as the unique image tag
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG . [cite: 4]
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG [cite: 4]
-        echo "image_uri=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          docker buildx build --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --push .
+          echo "Pushed image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          echo "image_uri=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
     # --- Optional: Trigger CD Workflow ---
     # Option A: Using repository_dispatch (Recommended)
