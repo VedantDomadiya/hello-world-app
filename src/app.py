@@ -9,7 +9,7 @@ app = Flask(__name__)
 def get_db_credentials():
     """Retrieves database credentials from AWS Secrets Manager."""
     secret_name = os.environ.get("DB_SECRET_ARN") # Get ARN from env var set in Task Definition
-    region_name = os.environ.get("AWS_REGION", "ap-south-1") # Get region from env var
+    region_name = os.environ.get("AWS_REGION", "ap-south-1") # Get region from env var ((enviornment variable)) 
 
     print(f"Attempting to fetch secret ARN: {secret_name} in region: {region_name}") 
 
